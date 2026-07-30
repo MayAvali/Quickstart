@@ -70,10 +70,10 @@ public class MecanumDrive {
         double rx = 0.6*RotationalLerp.interpolateMagnitude(rotate);
 
         double denominator = Math.max(Math.abs(rx) + Math.abs(x) + Math.abs(y), 1);
-        double frontLeftPower = ((-y + x + rx) / denominator) * (1 - (0.6 * sp));
-        double backLeftPower = ((-y - x + rx) / denominator) * (1 - (0.6 * sp));
-        double frontRightPower = ((-y - x - rx) / denominator) * (1 - (0.6 * sp));
-        double backRightPower = ((-y + x - rx) / denominator) * (1 - (0.6 * sp));
+        double frontLeftPower = ((-x - y + rx) / denominator) * (1 - (0.6 * sp));
+        double backLeftPower = ((-x + y + rx) / denominator) * (1 - (0.6 * sp));
+        double frontRightPower = ((-x + y - rx) / denominator) * (1 - (0.6 * sp));
+        double backRightPower = ((-x - y - rx) / denominator) * (1 - (0.6 * sp));
 
         leftFront.setPower(MecanumPowerCurve(frontLeftPower));
         leftBack.setPower(MecanumPowerCurve(backLeftPower));
