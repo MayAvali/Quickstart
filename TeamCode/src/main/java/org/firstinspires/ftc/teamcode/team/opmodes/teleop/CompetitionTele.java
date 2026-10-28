@@ -51,7 +51,7 @@ public class CompetitionTele extends LinearOpMode {
         if (isStopRequested()) return;
 
         servoGate.forceCloseGate();
-
+        //
         while (opModeIsActive())
         {
             drivetrain.botOrientedDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.right_trigger);
