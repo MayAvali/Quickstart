@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.team.opmodes.teleop;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -7,13 +8,14 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.teamcode.team.libraries.GamepadButton;
 import org.firstinspires.ftc.teamcode.team.subsystems.MecanumDrive;
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOpDrivetrain", group = "Linear OpMode")
+import java.util.List;
+
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "DrivetrainTele", group = "Linear OpMode")
 public class DrivetrainTele extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        waitForStart();
-        if (isStopRequested()) return;
+        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
 
         GamepadButton launchButton = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.RIGHT_BUMPER);
 
@@ -24,6 +26,9 @@ public class DrivetrainTele extends LinearOpMode {
                 (DcMotorEx) hardwareMap.dcMotor.get("rightBack"),
                 hardwareMap.get(IMU.class, "imu")
         );
+
+        waitForStart();
+        if (isStopRequested()) return;
 
         while (opModeIsActive())
         {
