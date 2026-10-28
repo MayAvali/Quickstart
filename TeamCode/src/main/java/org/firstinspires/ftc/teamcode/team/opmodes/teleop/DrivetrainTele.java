@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.team.opmodes;
+package org.firstinspires.ftc.teamcode.team.opmodes.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.team.libraries.GamepadButton;
 import org.firstinspires.ftc.teamcode.team.subsystems.MecanumDrive;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOpDrivetrain", group = "Linear OpMode")
-public class DrivetrainTeleop extends LinearOpMode {
+public class DrivetrainTele extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
