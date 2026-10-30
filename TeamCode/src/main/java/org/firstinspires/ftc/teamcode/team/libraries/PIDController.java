@@ -16,6 +16,12 @@ public class PIDController {
     private double lastError = 0;
     private double errorAccum = 0;
 
+    private double lastP = 0;
+    private double lastI = 0;
+    private double lastD = 0;
+
+    private double lastvalue = 0;
+
     public PIDController(double proportional, double integral, double derivative) {
         this(
                 proportional,
@@ -85,6 +91,12 @@ public class PIDController {
         }
         lastTime = time;
         lastError = error;
+
+        lastP = p;
+        lastI = i;
+        lastD = d;
+        lastvalue = value;
+
         return p + i + d;
     }
 
@@ -97,5 +109,21 @@ public class PIDController {
 
     public double getErrorAccum() {
         return errorAccum;
+    }
+
+    public double getP() {
+        return lastP;
+    }
+
+    public double getI() {
+        return lastI;
+    }
+
+    public double getD() {
+        return lastD;
+    }
+
+    public double getlastvalue() {
+        return lastvalue;
     }
 }

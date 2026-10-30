@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.teamcode.team.libraries.GamepadButton;
-import org.firstinspires.ftc.teamcode.team.subsystems.MecanumDrive;
+import org.firstinspires.ftc.teamcode.team.subsystems.mecanumDrive;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public class DrivetrainTele extends LinearOpMode {
 
         GamepadButton launchButton = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.RIGHT_BUMPER);
 
-        MecanumDrive drivetrain = new MecanumDrive(
+        mecanumDrive drivetrain = new mecanumDrive(
                 (DcMotorEx) hardwareMap.dcMotor.get("leftFront"),
                 (DcMotorEx) hardwareMap.dcMotor.get("leftBack"),
                 (DcMotorEx) hardwareMap.dcMotor.get("rightFront"),

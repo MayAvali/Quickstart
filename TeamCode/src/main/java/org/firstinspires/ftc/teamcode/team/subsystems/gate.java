@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.team.subsystems;
 
 import com.qualcomm.robotcore.hardware.Servo;
 
-public class Gate {
+public class gate {
     // -----------------------------------------------
     static final double ClosePosition = 0;
     static final double OpenPosition = 0.5;
@@ -12,7 +12,7 @@ public class Gate {
     private final Servo gate;
     static boolean isGateOpen = false;
 
-    public Gate(Servo gate) {
+    public gate(Servo gate) {
         this.gate = gate;
     }
     public void openGate() {

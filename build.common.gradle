@@ -110,6 +110,14 @@ android {
     ndkVersion '21.3.6528147'
 }
 
-repositories {
+    repositories {
+    mavenCentral()
+    google()
+    maven {
+        url = "https://mymaven.bylazar.com/releases"
+    }
+    maven {
+        url = "https://repo.dairy.foundation/releases"
+    }
 }
 

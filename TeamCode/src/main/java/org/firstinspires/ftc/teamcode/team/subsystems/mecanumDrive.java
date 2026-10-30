@@ -8,14 +8,14 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.teamcode.team.libraries.Lerp;
 
-public class MecanumDrive {
+public class mecanumDrive {
     public final DcMotorEx leftFront;
     public final DcMotorEx leftBack;
     public final DcMotorEx rightFront;
     public final DcMotorEx rightBack;
     public final IMU imu;
 
-    public MecanumDrive(DcMotorEx leftFront, DcMotorEx leftBack, DcMotorEx rightFront, DcMotorEx rightBack, IMU imu) {
+    public mecanumDrive(DcMotorEx leftFront, DcMotorEx leftBack, DcMotorEx rightFront, DcMotorEx rightBack, IMU imu) {
         this.leftFront = leftFront;
         this.leftBack = leftBack;
         this.rightFront = rightFront;

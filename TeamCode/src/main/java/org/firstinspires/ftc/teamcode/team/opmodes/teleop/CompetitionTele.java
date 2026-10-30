@@ -4,13 +4,12 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.team.libraries.GamepadButton;
-import org.firstinspires.ftc.teamcode.team.subsystems.Gate;
-import org.firstinspires.ftc.teamcode.team.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.team.subsystems.MecanumDrive;
-import org.firstinspires.ftc.teamcode.team.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.team.subsystems.gate;
+import org.firstinspires.ftc.teamcode.team.subsystems.intake;
+import org.firstinspires.ftc.teamcode.team.subsystems.mecanumDrive;
+import org.firstinspires.ftc.teamcode.team.subsystems.turret;
 
 import java.util.List;
 
@@ -23,7 +22,7 @@ public class CompetitionTele extends LinearOpMode {
 
         GamepadButton launchButton = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.RIGHT_BUMPER);
 
-        MecanumDrive drivetrain = new MecanumDrive(
+        mecanumDrive Drivetrain = new mecanumDrive(
                 (DcMotorEx) hardwareMap.dcMotor.get("leftFront"),
                 (DcMotorEx) hardwareMap.dcMotor.get("leftBack"),
                 (DcMotorEx) hardwareMap.dcMotor.get("rightFront"),
@@ -31,16 +30,16 @@ public class CompetitionTele extends LinearOpMode {
                 hardwareMap.get(IMU.class, "imu")
         );
 
-        Intake intake = new Intake(
+        intake Intake = new intake(
                 (DcMotorEx) hardwareMap.dcMotor.get("intakeL"),
                 (DcMotorEx) hardwareMap.dcMotor.get("intakeR")
         );
 
-        Gate servoGate = new Gate(
+        gate ServoGate = new gate(
                 hardwareMap.servo.get("gate")
         );
 
-        Turret turret = new Turret(
+        turret Turret = new turret(
                 hardwareMap.servo.get("turretL"),
                 hardwareMap.servo.get("turretR"),
                 (DcMotorEx) hardwareMap.dcMotor.get("launcherFront"),
@@ -50,18 +49,18 @@ public class CompetitionTele extends LinearOpMode {
         waitForStart();
         if (isStopRequested()) return;
 
-        servoGate.forceCloseGate();
+        ServoGate.forceCloseGate();
 
         while (opModeIsActive())
         {
-            drivetrain.botOrientedDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.right_trigger);
+            Drivetrain.botOrientedDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.right_trigger);
 
             telemetry.addData("RightBumper", gamepad1.right_bumper);
 
-            telemetry.addData("Front Left Motor Power " , drivetrain.getFrontLeftPower());
-            telemetry.addData("Back Left Motor Power " , drivetrain.getBackLeftPower());
-            telemetry.addData("Front Right Motor Power " , drivetrain.getFrontRightPower());
-            telemetry.addData("Back Right Motor Power " , drivetrain.getBackRightPower());
+            telemetry.addData("Front Left Motor Power " , Drivetrain.getFrontLeftPower());
+            telemetry.addData("Back Left Motor Power " , Drivetrain.getBackLeftPower());
+            telemetry.addData("Front Right Motor Power " , Drivetrain.getFrontRightPower());
+            telemetry.addData("Back Right Motor Power " , Drivetrain.getBackRightPower());
 
             telemetry.addData("Left Stick X " , gamepad1.left_stick_x);
             telemetry.addData("Left Stick Y " , gamepad1.left_stick_y);
