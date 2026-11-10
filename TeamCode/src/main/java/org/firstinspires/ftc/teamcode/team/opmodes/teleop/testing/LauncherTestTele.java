@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.team.libraries.GamepadButton;
+import org.firstinspires.ftc.teamcode.team.subsystems.intake;
 import org.firstinspires.ftc.teamcode.team.subsystems.turret;
 
 import java.util.List;
@@ -32,12 +33,18 @@ public class LauncherTestTele extends LinearOpMode {
                 (DcMotorEx) hardwareMap.dcMotor.get("launcherRear")
         );
 
+        intake Intake = new intake(
+                (DcMotorEx) hardwareMap.dcMotor.get("intakeL"),
+                (DcMotorEx) hardwareMap.dcMotor.get("intakeR")
+        );
+
         waitForStart();
         if (isStopRequested()) return;
 
         while (opModeIsActive())
         {
             Turret.launcherSetVel(turret.fallbackVelocity);
+            Intake.setPower(1);
 
             telemetry.addData("LauncherTarget", turret.fallbackVelocity);
 
