@@ -5,7 +5,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import com.pedropathing.math.Pose;
+import com.pedropathing.follower.Follower;
+
+import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.team.libraries.GamepadButton;
+import org.firstinspires.ftc.teamcode.team.libraries.PositionBank;
 import org.firstinspires.ftc.teamcode.team.subsystems.gate;
 import org.firstinspires.ftc.teamcode.team.subsystems.intake;
 import org.firstinspires.ftc.teamcode.team.subsystems.mecanumDrive;
@@ -15,12 +20,11 @@ import java.util.List;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "CompetitionTele", group = "Linear OpMode")
 public class CompetitionTele extends LinearOpMode {
+    private Follower follower;
     @Override
     public void runOpMode() throws InterruptedException {
 
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
-
-        GamepadButton launchButton = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.RIGHT_BUMPER);
 
         mecanumDrive Drivetrain = new mecanumDrive(
                 (DcMotorEx) hardwareMap.dcMotor.get("leftFront"),
@@ -36,7 +40,8 @@ public class CompetitionTele extends LinearOpMode {
         );
 
         gate ServoGate = new gate(
-                hardwareMap.servo.get("gate")
+                hardwareMap.servo.get("gateL"),
+                hardwareMap.servo.get("gateR")
         );
 
         turret Turret = new turret(
@@ -46,6 +51,17 @@ public class CompetitionTele extends LinearOpMode {
                 (DcMotorEx) hardwareMap.dcMotor.get("launcherRear")
         );
 
+        follower = Constants.create(hardwareMap);
+        Object savedPosition = blackboard.get("BotPose");
+        Pose startPosition = (savedPosition instanceof Pose) ? (Pose) savedPosition : PositionBank.HiveInitPosition;
+        follower.setPose(startPosition);
+
+        GamepadButton stateSwitchButton = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.RIGHT_BUMPER);
+        GamepadButton goalSwitchButton = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.LEFT_BUMPER);
+
+        boolean launchActive = false;
+        boolean rightCellUp = false;
+
         waitForStart();
         if (isStopRequested()) return;
 
@@ -53,7 +69,27 @@ public class CompetitionTele extends LinearOpMode {
 
         while (opModeIsActive())
         {
+            if(launchActive) {
+                ServoGate.openGate();
+                if (rightCellUp) {
+
+                } else {
+
+                }
+            } else {
+                ServoGate.closeGate();
+                if (rightCellUp) {
+
+                } else {
+
+                }
+
+            }
             Drivetrain.botOrientedDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.right_trigger);
+
+            Intake.runIntakeDumb(gamepad1.left_trigger, gamepad1.right_trigger);
+
+
 
             telemetry.addData("RightBumper", gamepad1.right_bumper);
 

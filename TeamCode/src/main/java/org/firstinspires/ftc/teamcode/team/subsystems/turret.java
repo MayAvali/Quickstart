@@ -15,7 +15,7 @@ public class turret {
 
     //------------------------------
     public static final double fallbackVelocity = Conversion.RPMtoVel(1600);
-    public static final double MotionRangeDegrees = 248.88888889;
+    public static final double MotionRangeDegrees = 210;
 
     //------------------------------
     public static class launcherPID {

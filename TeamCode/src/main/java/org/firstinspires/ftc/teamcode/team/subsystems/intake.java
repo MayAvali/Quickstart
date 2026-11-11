@@ -18,4 +18,9 @@ public class intake {
         intake2.setPower(power);
     }
 
+    public void runIntakeDumb(double reverse, double forward){
+        intake1.setPower(forward-reverse);
+        intake2.setPower(forward-reverse);
+    }
+
 }
