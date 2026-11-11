@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.team.subsystems;
 
+import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -14,7 +15,7 @@ public class turret {
     private final DcMotorEx launcherMotorRear;
 
     //------------------------------
-    public static final double fallbackVelocity = Conversion.RPMtoVel(1600);
+    public static final double fallbackVelocity = Conversion.RPMtoVel(1500);
     public static final double MotionRangeDegrees = 210;
 
     //------------------------------
@@ -40,6 +41,11 @@ public class turret {
         double power = LauncherPID.update(targetVelocity,launcherMotorRear.getVelocity());
         launcherMotorFront.setPower(power);
         launcherMotorRear.setPower(power);
+    }
+
+    public static double launcherDistToVelocity(double Distance){
+        if(Distance < 20) return  2369;
+        return 0.5*(1247.6 + 51.373 * Distance + 24437.0 / Distance);
     }
 
     public double launcherGetVel() {
