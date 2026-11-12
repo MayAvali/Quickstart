@@ -4,7 +4,7 @@ import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.team.libraries.PIDController;
+import org.firstinspires.ftc.teamcode.team.libraries.PIDFController;
 import org.firstinspires.ftc.teamcode.team.libraries.Conversion;
 
 public class turret {
@@ -20,12 +20,13 @@ public class turret {
 
     public static final double CenterOffsetDegrees = 2;
     //------------------------------
-    public static class launcherPID {
+    public static class launcherPIDF {
         public static double P = 0.003;
         public static double I = 0.00001;
         public static double D = 0.01;
+        public static double F = 0;
     }
-    public static PIDController LauncherPID = new PIDController(launcherPID.P, launcherPID.I, launcherPID.D);
+    public static PIDFController LauncherPIDF = new PIDFController(launcherPIDF.P, launcherPIDF.I, launcherPIDF.D, launcherPIDF.F);
     public turret(Servo turretDriverL, Servo turretDriverR, DcMotorEx launcherMotorFront, DcMotorEx launcherMotorRear) {
         this.turretDriverL = turretDriverL;
         this.turretDriverR = turretDriverR;
@@ -35,11 +36,11 @@ public class turret {
         launcherMotorFront.setDirection(DcMotorEx.Direction.REVERSE);
         launcherMotorRear.setDirection(DcMotorEx.Direction.REVERSE);
 
-        LauncherPID.reset();
-        LauncherPID.withIntegralRange(50);
+        LauncherPIDF.reset();
+        LauncherPIDF.withIntegralRange(50);
     }
     public void launcherSetVel(double targetVelocity){
-        double power = LauncherPID.update(targetVelocity,launcherMotorRear.getVelocity());
+        double power = LauncherPIDF.update(targetVelocity,launcherMotorRear.getVelocity());
         launcherMotorFront.setPower(power);
         launcherMotorRear.setPower(power);
     }
@@ -52,22 +53,26 @@ public class turret {
         turretDriverR.setPosition(ServoTarget);
     }
 
-    public static double launcherDistToVelocity(double Distance){
-        if(Distance < 20) return  2369;
-        return 0.1666*(1247.6 + 51.373 * Distance + 24437.0 / Distance);
-    }
+    public static double launcherDistToVelocity(double Distance) {
+                Distance = Math.max(20, Math.min(90, Distance));
+                return 0.333*((0.00016752*Math.pow(Distance,4))-(0.0408935*Math.pow(Distance,3))+(3.67967*Math.pow(Distance,2))-(126.85945*Distance)+3380.61105);
+        }
+
 
     public double launcherGetVel() {
-        return LauncherPID.getlastvalue();
+        return LauncherPIDF.getlastvalue();
     }
     public double launcherGetP() {
-        return LauncherPID.getP();
+        return LauncherPIDF.getP();
     }
     public double launcherGetI() {
-        return LauncherPID.getI();
+        return LauncherPIDF.getI();
     }
     public double launcherGetD() {
-        return LauncherPID.getD();
+        return LauncherPIDF.getD();
+    }
+    public double launcherGetF() {
+        return LauncherPIDF.getF();
     }
 
 }

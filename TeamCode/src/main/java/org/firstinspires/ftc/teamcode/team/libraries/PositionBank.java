@@ -9,4 +9,3 @@ public class PositionBank {
     public static final Pose HiveInitPosition = new Pose(58,12, Math.toRadians(90));
     public static final Pose LoadingZoneParkPosition = new Pose(58,12, Math.toRadians(90));
 }
-

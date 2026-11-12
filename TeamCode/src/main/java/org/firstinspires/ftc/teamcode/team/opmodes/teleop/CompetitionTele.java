@@ -95,7 +95,7 @@ public class CompetitionTele extends LinearOpMode {
         boolean targetResetIdle = false;
 
         boolean launchActive = false;
-        boolean rightCellUp = false;
+        boolean leftCellUp = true;
 
         waitForStart();
         if (isStopRequested()) return;
@@ -118,15 +118,15 @@ public class CompetitionTele extends LinearOpMode {
                 launchActive = !launchActive;
             }
             if(GoalSwitchButton.isPressed()){
-                rightCellUp = !rightCellUp;
+                leftCellUp = !leftCellUp;
             }
             if(TargetResetButton.isPressed()){
                 TargetShift = new Pose(0,0,0);
             }
-            if(OdoResetButton.isPressed() && !TargetResetButton.isDown()){
-                follower.setPose(PositionBank.FallbackResetPosition);
-            }
-            if(OdoResetButton.isPressed() && TargetResetButton.isDown()){
+//            if(OdoResetButton.isPressed() && !TargetResetButton.isDown()){
+//                follower.setPose(PositionBank.FallbackResetPosition);
+//            }
+            if(OdoResetButton.isPressed()){
                 if (!targetResetIdle) {
                     targetResetIdle = true;
                 } else {
@@ -160,7 +160,7 @@ public class CompetitionTele extends LinearOpMode {
 
             if (launchActive) ServoGate.openGate(); else ServoGate.closeGate();
 
-            if (rightCellUp) {
+            if (leftCellUp) {
                 if(!fixedTurret){
                     Turret.turretSetTarget(LocalizationUtils.getAngle(RobotPose, rightCellTargetPosition));
                 }else{
@@ -176,19 +176,24 @@ public class CompetitionTele extends LinearOpMode {
 
             if (!manualSpeed){
                 if (!targetResetIdle) {
-                    if (rightCellUp){
+                    if (leftCellUp){
                         Turret.launcherSetVel(turret.launcherDistToVelocity(LocalizationUtils.getDistancePose(follower.pose(), PositionBank.RightCellTargetPosition)));
                     }else{
                         Turret.launcherSetVel(turret.launcherDistToVelocity(LocalizationUtils.getDistancePose(follower.pose(), PositionBank.LeftCellTargetPosition)));
                     }
                 } else {
-                    Turret.launcherSetVel(fallbackTargetVelocity);
+                    Turret.launcherSetVel(0);
                 }
             }
 
             Drivetrain.botOrientedDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.right_trigger);
 
-            Intake.runIntakeDumb(gamepad1.left_trigger, gamepad1.right_trigger);
+            if (!targetResetIdle) {
+                Intake.runIntake(gamepad1.left_trigger, gamepad1.right_trigger);
+            } else {
+                Intake.runIntake(0, 1);
+            }
+
 
 
 
@@ -215,12 +220,26 @@ public class CompetitionTele extends LinearOpMode {
             panelsTelemetry.addData("LauncherI", Turret.launcherGetI());
             panelsTelemetry.addData("LauncherD", Turret.launcherGetD());
 
+            panelsTelemetry.addData("IntakeTarget", Intake.intakeGetTarget());
+            panelsTelemetry.addData("IntakeVel", Intake.intakeGetVel());
+            panelsTelemetry.addData("IntakeP", Intake.intakeGetP());
+            panelsTelemetry.addData("IntakeI", Intake.intakeGetI());
+            panelsTelemetry.addData("IntakeD", Intake.intakeGetD());
+            panelsTelemetry.addData("IntakeF", Intake.intakeGetF());
+
             telemetry.addData("LauncherVel", Turret.launcherGetVel());
             telemetry.addData("LauncherP", Turret.launcherGetP());
             telemetry.addData("LauncherI", Turret.launcherGetI());
             telemetry.addData("LauncherD", Turret.launcherGetD());
 
+            telemetry.addData("IntakeVel", Intake.intakeGetVel());
+            telemetry.addData("IntakeP", Intake.intakeGetP());
+            telemetry.addData("IntakeI", Intake.intakeGetI());
+            telemetry.addData("IntakeD", Intake.intakeGetD());
+            telemetry.addData("IntakeF", Intake.intakeGetF());
+
             telemetry.update();
+            panelsTelemetry.update(telemetry);
         }
     }
 }
