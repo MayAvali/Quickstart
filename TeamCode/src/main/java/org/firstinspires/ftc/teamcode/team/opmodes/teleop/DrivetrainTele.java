@@ -28,7 +28,7 @@ public class DrivetrainTele extends LinearOpMode {
         );
 
         waitForStart();
-        if (isStopRequested()) return null;
+        if (isStopRequested()) return;
 
         while (opModeIsActive())
         {
@@ -47,6 +47,5 @@ public class DrivetrainTele extends LinearOpMode {
             telemetry.addData("Right Trigger " , gamepad1.right_trigger);
             telemetry.update();
         }
-        return null;
     }
 }

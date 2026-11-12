@@ -4,11 +4,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class gate {
     // -----------------------------------------------
-    static final double LClosePosition = 0.75;
-    static final double LOpenPosition = 0.5;
+    static final double LClosePosition = 0.45;
+    static final double LOpenPosition = 0.28;
 
-    static final double RClosePosition = 0.25;
-    static final double ROpenPosition = 0.5;
+    static final double RClosePosition = 0.18;
+    static final double ROpenPosition = 0.35;
 
     // -----------------------------------------------
 

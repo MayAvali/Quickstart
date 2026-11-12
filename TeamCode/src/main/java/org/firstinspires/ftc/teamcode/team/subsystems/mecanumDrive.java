@@ -35,6 +35,11 @@ public class mecanumDrive {
         rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
     }
 
     private final Lerp OrthogonalLerp = new Lerp(new double[][]{
@@ -65,8 +70,8 @@ public class mecanumDrive {
         // This ensures all the powers maintain the same ratio,
         // but only if at least one is out of the range [-1, 1]
 
-        double y = OrthogonalLerp.interpolateMagnitude(forward);
-        double x = OrthogonalLerp.interpolateMagnitude(lateral);
+        double y = OrthogonalLerp.interpolateMagnitude(-forward);
+        double x = OrthogonalLerp.interpolateMagnitude(-lateral);
         double rx = 0.6*RotationalLerp.interpolateMagnitude(rotate);
 
         double denominator = Math.max(Math.abs(rx) + Math.abs(x) + Math.abs(y), 1);

@@ -18,6 +18,7 @@ public class turret {
     public static final double fallbackVelocity = Conversion.RPMtoVel(1500);
     public static final double MotionRangeDegrees = 210;
 
+    public static final double CenterOffsetDegrees = 2;
     //------------------------------
     public static class launcherPID {
         public static double P = 0.003;
@@ -43,9 +44,17 @@ public class turret {
         launcherMotorRear.setPower(power);
     }
 
+    public void turretSetTarget (double Angle){
+        Angle = Math.max(-MotionRangeDegrees/2, Math.min(Angle,MotionRangeDegrees/2));
+        double ServoTarget = 0.5 - ((Angle+CenterOffsetDegrees)/(MotionRangeDegrees));
+        ServoTarget = Math.max(0.0, Math.min(1.0, ServoTarget));
+        turretDriverL.setPosition(ServoTarget);
+        turretDriverR.setPosition(ServoTarget);
+    }
+
     public static double launcherDistToVelocity(double Distance){
         if(Distance < 20) return  2369;
-        return 0.5*(1247.6 + 51.373 * Distance + 24437.0 / Distance);
+        return 0.1666*(1247.6 + 51.373 * Distance + 24437.0 / Distance);
     }
 
     public double launcherGetVel() {

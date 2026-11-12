@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.team.opmodes.teleop;
 
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -23,7 +25,6 @@ import java.util.List;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "CompetitionTele", group = "Linear OpMode")
 public class CompetitionTele extends LinearOpMode {
-    private Follower follower;
     public GoBildaPinpointDriver pinpoint;
     @Override
     public void runOpMode() throws InterruptedException {
@@ -56,13 +57,16 @@ public class CompetitionTele extends LinearOpMode {
         );
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
-        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
-        follower = Constants.create(hardwareMap);
+        Follower follower = Constants.create(hardwareMap);
         Object savedPosition = blackboard.get("BotPose");
         Pose startPosition = (savedPosition instanceof Pose) ? (Pose) savedPosition : PositionBank.HiveInitPosition;
         follower.setPose(startPosition);
+        follower.update();
+
+        TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry(); //I followed you
+
+        panelsTelemetry.update(telemetry);
 
         GamepadButton StateSwitchButton = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.RIGHT_BUMPER);
         GamepadButton GoalSwitchButton = new GamepadButton(gamepad1, GamepadButton.gamepadKeys.LEFT_BUMPER);
@@ -82,6 +86,8 @@ public class CompetitionTele extends LinearOpMode {
         Pose leftCellTargetPosition = PositionBank.LeftCellTargetPosition;
         Pose rightCellTargetPosition = PositionBank.RightCellTargetPosition;
 
+        Pose RobotPose = follower.pose();
+
         boolean fixedTurret = false;
         boolean manualSpeed = false;
         double fallbackTargetVelocity = Conversion.RPMtoVel(1500);
@@ -98,6 +104,10 @@ public class CompetitionTele extends LinearOpMode {
 
         while (opModeIsActive())
         {
+            follower.update();
+
+            RobotPose = follower.pose();
+
             if(ManualSpeedToggle.isPressed()){
                 manualSpeed = !manualSpeed;
             }
@@ -131,54 +141,39 @@ public class CompetitionTele extends LinearOpMode {
                 TargetShift = TargetShift.plus(new Pose(1,0,0));
             }
             if(TargetForwardShiftButton.isPressed() && fixedTurret){
-                fallbackTargetVelocity += 25;
+                fallbackTargetVelocity += 100;
             }
             if(TargetRightShiftButton.isPressed() && !fixedTurret){
                 TargetShift = TargetShift.plus(new Pose(0,-1,0));
             }
             if(TargetDownShiftButton.isPressed() && !fixedTurret){
-                TargetShift = TargetShift.plus(new Pose(1,0,0));
+                TargetShift = TargetShift.plus(new Pose(-1,0,0));
             }
              if(TargetDownShiftButton.isPressed() && fixedTurret){
-                fallbackTargetVelocity -= 25;
+                fallbackTargetVelocity -= 100;
             }
             if(TargetLeftShiftButton.isPressed() && !fixedTurret){
                 TargetShift = TargetShift.plus(new Pose(0,1,0));
             }
-            rightCellTargetPosition = rightCellTargetPosition.plus(TargetShift);
-            leftCellTargetPosition = leftCellTargetPosition.plus(TargetShift);
+            rightCellTargetPosition = PositionBank.RightCellTargetPosition.plus(TargetShift);
+            leftCellTargetPosition = PositionBank.LeftCellTargetPosition.plus(TargetShift);
 
             if (launchActive) ServoGate.openGate(); else ServoGate.closeGate();
 
-            if(launchActive) {
-                if (rightCellUp) {
-                    if(!fixedTurret){
-
-                    }else{
-
-                    }
-                } else {
-                    if(!fixedTurret){
-
-                    }else{
-
-                    }
+            if (rightCellUp) {
+                if(!fixedTurret){
+                    Turret.turretSetTarget(LocalizationUtils.getAngle(RobotPose, rightCellTargetPosition));
+                }else{
+                    Turret.turretSetTarget(0);
                 }
             } else {
-                if (rightCellUp) {
-                    if(!fixedTurret){
-
-                    }else{
-
-                    }
-                } else {
-                    if(!fixedTurret){
-
-                    }else{
-
-                    }
+                if(!fixedTurret){
+                    Turret.turretSetTarget(LocalizationUtils.getAngle(RobotPose, leftCellTargetPosition));
+                }else{
+                    Turret.turretSetTarget(0);
                 }
             }
+
             if (!manualSpeed){
                 if (!targetResetIdle) {
                     if (rightCellUp){
@@ -204,10 +199,27 @@ public class CompetitionTele extends LinearOpMode {
             telemetry.addData("Front Right Motor Power " , Drivetrain.getFrontRightPower());
             telemetry.addData("Back Right Motor Power " , Drivetrain.getBackRightPower());
 
+            telemetry.addData("RobotPose", follower.pose());
+            telemetry.addData("TargetPose", PositionBank.RightCellTargetPosition);
+            telemetry.addData("LaunchActive", launchActive);
+
             telemetry.addData("Left Stick X " , gamepad1.left_stick_x);
             telemetry.addData("Left Stick Y " , gamepad1.left_stick_y);
             telemetry.addData("Right Stick X " , gamepad1.right_stick_x);
             telemetry.addData("Right Trigger " , gamepad1.right_trigger);
+
+            panelsTelemetry.addData("LauncherTarget", turret.fallbackVelocity);
+
+            panelsTelemetry.addData("LauncherVel", Turret.launcherGetVel());
+            panelsTelemetry.addData("LauncherP", Turret.launcherGetP());
+            panelsTelemetry.addData("LauncherI", Turret.launcherGetI());
+            panelsTelemetry.addData("LauncherD", Turret.launcherGetD());
+
+            telemetry.addData("LauncherVel", Turret.launcherGetVel());
+            telemetry.addData("LauncherP", Turret.launcherGetP());
+            telemetry.addData("LauncherI", Turret.launcherGetI());
+            telemetry.addData("LauncherD", Turret.launcherGetD());
+
             telemetry.update();
         }
     }
