@@ -17,28 +17,25 @@ import com.pedropathing.paths.interpolator.Interpolator;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
-import org.firstinspires.ftc.teamcode.team.libraries.PositionBank;
 import org.firstinspires.ftc.teamcode.team.subsystems.gate;
 import org.firstinspires.ftc.teamcode.team.subsystems.intake;
 import org.firstinspires.ftc.teamcode.team.subsystems.turret;
 
 import static com.pedropathing.ivy.commands.Commands.*;
-import static com.pedropathing.ivy.groups.Groups.*;
+
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "AutoPath", group = "Autonomous")
-public class AutoCool extends LinearOpMode {
-
-    //Robot twists in opposite direction for Get Garden Path than to what is in the example
+@Autonomous(name = "1. Autonomous Tip, Fill, PARK", group = "Autonomous")
+public class AutoInitTipAndFill extends LinearOpMode {
 
     private Follower follower;
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    private final Pose start = poseFactory.of(56.2669,7.0872, 90);
+    private final Pose start = poseFactory.of(56.2669, 7.0872, 90);
     private final Pose shootPreload = poseFactory.of(58, 30, 90);
     private final Pose getGardenStart = poseFactory.of(58, 30, 90);
-    private final Pose getGarden = poseFactory.of(8.239, 7.8575, -90);
+    private final Pose getGarden = poseFactory.of(8.239, 7.8575, -90.001);
     private final Pose getGardenControl1 = poseFactory.of(29.493, 29.1373, 0);
     private final Pose shootGarden = poseFactory.of(56, 114.6724, -90);
     private final Pose shootGardenControl1 = poseFactory.of(57.7995, 6.2164, 0);
@@ -58,31 +55,128 @@ public class AutoCool extends LinearOpMode {
     private gate ServoGate;
     private turret Turret;
 
+    // --- Subsystem Updating Functions (allows PID to function in the opmode loop) ---
+    public void updateIntake() {
+        if (Intake != null) {
+            Intake.intakeUpdate();
+        }
+    }
+
+    public void updateLauncher() {
+        if (Turret != null) {
+            Turret.launcherUpdate();
+        }
+    }
+
+    // --- Ivy Control Flow Commands ---
+
+    /** Non-blocking waiting function */
+    public Command waitSeconds(double seconds) {
+        ElapsedTime timer = new ElapsedTime();
+        return sequential(
+                instant(timer::reset),
+                waitUntil(() -> timer.seconds() >= seconds)
+        );
+    }
+
+    /** Intake speed setting function (reverse, forward power inputs) */
+    public Command setIntakeSpeed(double reverse, double forward) {
+        return instant(() -> Intake.runIntake(reverse, forward));
+    }
+
+    /** Intake velocity setting function (direct target velocity input) */
+    public Command setIntakeVelocity(double targetVelocity) {
+        return instant(() -> Intake.setTargetVelocity(targetVelocity));
+    }
+
+    /** Reverses the intake for a specified duration in seconds, then stops it */
+    public Command reverseIntake(double seconds) {
+        return sequential(
+                setIntakeSpeed(1, 0),
+                waitSeconds(seconds),
+                setIntakeSpeed(0, 0)
+        );
+    }
+
+    /** Reverses the intake for 0.2 seconds, then stops it */
+    public Command reverseIntake() {
+        return reverseIntake(0.2);
+    }
+
+    /** Servo gate opening function */
+    public Command openGate() {
+        return instant(() -> ServoGate.openGate());
+    }
+
+    /** Servo gate closing function */
+    public Command closeGate() {
+        return instant(() -> ServoGate.closeGate());
+    }
+
+    /** Turret target angle function */
+    public Command setTurretAngle(double angleDegrees) {
+        return instant(() -> Turret.turretSetTarget(angleDegrees));
+    }
+
+    /** Launcher target speed setting function */
+    public Command setLauncherSpeed(double targetVelocity) {
+        return instant(() -> Turret.launcherSetVel(targetVelocity));
+    }
+
     // Autonomous routine
     public Command autoRoutine() {
         return sequential(
+                setTurretAngle(0),
+                closeGate(),
+                setLauncherSpeed(671),
+
                 follow(follower, shootPreload()),
+
+                openGate(),
+                waitSeconds(2),
+                reverseIntake(),
+                waitSeconds(1),
+                closeGate(),
+
                 follow(follower, getGarden()),
+
                 follow(follower, shootGarden()),
+
+                openGate(),
+                waitSeconds(2),
+                reverseIntake(),
+                waitSeconds(1),
+                closeGate(),
+
                 follow(follower, preparePush()),
-                follow(follower, pushPartner())
+
+                setIntakeSpeed(0,1),
+
+                follow(follower, pushPartner()),
+
+                waitSeconds(0.5),
+                setTurretAngle(-60),
+                waitSeconds(0.5),
+                setTurretAngle(60),
+                waitSeconds(1),
+                setTurretAngle(0)
         );
     }
 
     @Override
     public void runOpMode() {
 
-        intake Intake = new intake(
+        Intake = new intake(
                 (DcMotorEx) hardwareMap.dcMotor.get("intakeL"),
                 (DcMotorEx) hardwareMap.dcMotor.get("intakeR")
         );
 
-        gate ServoGate = new gate(
+        ServoGate = new gate(
                 hardwareMap.servo.get("gateL"),
                 hardwareMap.servo.get("gateR")
         );
 
-        turret Turret = new turret(
+        Turret = new turret(
                 hardwareMap.servo.get("turretL"),
                 hardwareMap.servo.get("turretR"),
                 (DcMotorEx) hardwareMap.dcMotor.get("launcherFront"),
@@ -100,6 +194,10 @@ public class AutoCool extends LinearOpMode {
         while (opModeIsActive()) {
             follower.update();
             Scheduler.execute();
+
+            // Continuously execute subsystem PID loops
+            updateIntake();
+            updateLauncher();
 
             telemetry.addData("x", follower.pose().x());
             telemetry.addData("y", follower.pose().y());
@@ -119,9 +217,7 @@ public class AutoCool extends LinearOpMode {
     }
 
     public Path getGarden() {
-        return Paths.curve(getGardenStart, getGardenControl1, getGarden).heading(Interpolator.piecewise().until(0.1, Interpolator.linear(90, 70)).until(1, Interpolator.linear(70, 270)));
-        //return Paths.curve(getGardenStart, getGardenControl1, getGarden).linear(getGardenStart, getGarden);
-
+        return Paths.curve(getGardenStart, getGardenControl1, getGarden).linear(getGardenStart, getGarden);
     }
 
     public Path shootGarden() {
@@ -135,12 +231,4 @@ public class AutoCool extends LinearOpMode {
     public Path pushPartner() {
         return Paths.line(preparePush, pushPartner).constant(pushPartner);
     }
-    private Command pause(double seconds) {
-        ElapsedTime timer = new ElapsedTime();
-        return sequential(
-                instant(timer::reset),
-                waitUntil(() -> timer.seconds() >= seconds)
-        );
-    }
-
 }

@@ -22,9 +22,9 @@ public class turret {
     public static final double CenterOffsetDegrees = 2;
     //------------------------------
     public static class launcherPIDF {
-        public static double P = 0.005;
-        public static double I = 0.000001;
-        public static double D = 0.000000;
+        public static double P = 0.012;
+        public static double I = 0.00001;
+        public static double D = 0.02;
         public static double F = 0.00046;
     }
     public static PIDFController LauncherPIDF = new PIDFController(launcherPIDF.P, launcherPIDF.I, launcherPIDF.D, launcherPIDF.F);
@@ -38,7 +38,7 @@ public class turret {
         launcherMotorRear.setDirection(DcMotorEx.Direction.REVERSE);
 
         LauncherPIDF.reset();
-        LauncherPIDF.integralRange = 50;
+        LauncherPIDF.integralRange = 30;
     }
 
     public void launcherSetVel(double targetVelocity){

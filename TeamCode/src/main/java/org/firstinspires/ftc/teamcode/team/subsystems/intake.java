@@ -38,14 +38,20 @@ public class intake {
         intake2.setPower(forward-reverse);
     }
 
-    public void runIntake(double reverse, double forward){
-//        reverse = Math.min(1, reverse);
-//        forward = Math.min(1, forward);
-        lastTargetVelocity = 2000 * (1*(1-forward) - 2*reverse);
+    public void intakeUpdate() {
         double power = IntakePIDF.update(lastTargetVelocity, intake1.getVelocity());
-
         intake1.setPower(power);
         intake2.setPower(power);
+    }
+
+    public void runIntake(double reverse, double forward){
+        lastTargetVelocity = 2000 * (1*(1-forward) - 2*reverse);
+        intakeUpdate();
+    }
+
+    public void setTargetVelocity(double targetVelocity) {
+        this.lastTargetVelocity = targetVelocity;
+        intakeUpdate();
     }
 
     public double intakeGetTarget() {

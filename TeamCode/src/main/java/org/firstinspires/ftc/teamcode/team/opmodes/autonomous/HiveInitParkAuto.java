@@ -24,13 +24,14 @@ import org.firstinspires.ftc.teamcode.team.subsystems.turret;
 
 import java.util.List;
 
-@Autonomous(name = "1. Autonomous HiveInit PARK", group = "Autonomous OpMode")
+@Autonomous(name = "2. Autonomous HiveInit PARK", group = "Autonomous OpMode")
 public class HiveInitParkAuto extends LinearOpMode {
 
     final Pose InitPose = PositionBank.HiveInitPosition;
     final Pose ParkPose = PositionBank.LoadingZoneParkPosition;
 
     Follower follower; // Add this
+
     private Path park(){
         return line(InitPose, ParkPose).linear(InitPose, ParkPose);
     }
@@ -68,6 +69,8 @@ public class HiveInitParkAuto extends LinearOpMode {
 
         follower.setPose(InitPose);
 
+        follower.update();
+
         waitForStart();
 
         schedule(autoRoutine());
@@ -75,8 +78,6 @@ public class HiveInitParkAuto extends LinearOpMode {
         if (isStopRequested()) return;
         while(opModeIsActive()) {
             blackboard.put("BotPose", follower.pose());
-
-            Turret.launcherSetVel(1500);
 
             follower.update();
             Scheduler.execute();
