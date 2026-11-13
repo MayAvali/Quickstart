@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.team.libraries.PIDFController;
 import org.firstinspires.ftc.teamcode.team.libraries.Conversion;
+import org.firstinspires.ftc.teamcode.team.opmodes.teleop.testing.LauncherTestTele;
 
 public class turret {
 
@@ -21,10 +22,10 @@ public class turret {
     public static final double CenterOffsetDegrees = 2;
     //------------------------------
     public static class launcherPIDF {
-        public static double P = 0.003;
-        public static double I = 0.00001;
-        public static double D = 0.01;
-        public static double F = 0;
+        public static double P = 0.005;
+        public static double I = 0.000001;
+        public static double D = 0.000000;
+        public static double F = 0.00046;
     }
     public static PIDFController LauncherPIDF = new PIDFController(launcherPIDF.P, launcherPIDF.I, launcherPIDF.D, launcherPIDF.F);
     public turret(Servo turretDriverL, Servo turretDriverR, DcMotorEx launcherMotorFront, DcMotorEx launcherMotorRear) {
@@ -37,12 +38,17 @@ public class turret {
         launcherMotorRear.setDirection(DcMotorEx.Direction.REVERSE);
 
         LauncherPIDF.reset();
-        LauncherPIDF.withIntegralRange(50);
+        LauncherPIDF.integralRange = 50;
     }
+
     public void launcherSetVel(double targetVelocity){
         double power = LauncherPIDF.update(targetVelocity,launcherMotorRear.getVelocity());
         launcherMotorFront.setPower(power);
         launcherMotorRear.setPower(power);
+    }
+
+    public void launcherUpdate () {
+        launcherSetVel(LauncherPIDF.getLastSetPoint());
     }
 
     public void turretSetTarget (double Angle){
@@ -55,7 +61,7 @@ public class turret {
 
     public static double launcherDistToVelocity(double Distance) {
                 Distance = Math.max(20, Math.min(90, Distance));
-                return 0.333*((0.00016752*Math.pow(Distance,4))-(0.0408935*Math.pow(Distance,3))+(3.67967*Math.pow(Distance,2))-(126.85945*Distance)+3380.61105);
+                return 0.35*((0.00016752*Math.pow(Distance,4))-(0.0408935*Math.pow(Distance,3))+(3.67967*Math.pow(Distance,2))-(126.85945*Distance)+3380.61105);
         }
 
 
@@ -74,5 +80,7 @@ public class turret {
     public double launcherGetF() {
         return LauncherPIDF.getF();
     }
+
+    public static double launcherGetTarget(){ return LauncherPIDF.getLastSetPoint();}
 
 }

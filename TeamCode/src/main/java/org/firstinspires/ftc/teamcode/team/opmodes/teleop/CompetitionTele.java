@@ -213,7 +213,7 @@ public class CompetitionTele extends LinearOpMode {
             telemetry.addData("Right Stick X " , gamepad1.right_stick_x);
             telemetry.addData("Right Trigger " , gamepad1.right_trigger);
 
-            panelsTelemetry.addData("LauncherTarget", turret.fallbackVelocity);
+            panelsTelemetry.addData("LauncherTarget", turret.launcherGetTarget());
 
             panelsTelemetry.addData("LauncherVel", Turret.launcherGetVel());
             panelsTelemetry.addData("LauncherP", Turret.launcherGetP());

@@ -6,6 +6,7 @@ public class PositionBank {
     public static final Pose FallbackResetPosition = new Pose (9,135,0);
     public static final Pose RightCellTargetPosition = new Pose(58.5, 58.5, 0);
     public static final Pose LeftCellTargetPosition = new Pose(58.5, 85.5, 0);
-    public static final Pose HiveInitPosition = new Pose(58,12, Math.toRadians(90));
+    public static final Pose HiveInitPosition = new Pose(56.2669,7.0872, Math.toRadians(90));
+    public static final Pose HiveInitPositionDegrees = new Pose(56.2669,7.0872, 90);
     public static final Pose LoadingZoneParkPosition = new Pose(58,12, Math.toRadians(90));
 }
