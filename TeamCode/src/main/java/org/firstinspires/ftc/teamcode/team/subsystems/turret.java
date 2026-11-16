@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode.team.subsystems;
 
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.team.libraries.PIDFController;
 import org.firstinspires.ftc.teamcode.team.libraries.Conversion;
@@ -15,19 +17,24 @@ public class turret {
     private final DcMotorEx launcherMotorFront;
     private final DcMotorEx launcherMotorRear;
 
+    private VoltageSensor voltSensor;
+
     //------------------------------
     public static final double fallbackVelocity = Conversion.RPMtoVel(1500);
     public static final double MotionRangeDegrees = 210;
 
-    public static final double CenterOffsetDegrees = 2;
+    public static final double CenterOffsetDegrees = -2;
+
     //------------------------------
     public static class launcherPIDF {
-        public static double P = 0.012;
-        public static double I = 0.00001;
-        public static double D = 0.02;
-        public static double F = 0.00046;
+        public static double P = 0.035;
+        public static double I = 0.00000;
+        public static double D = 0.00;
+        public static double F = 0.00053;
     }
+
     public static PIDFController LauncherPIDF = new PIDFController(launcherPIDF.P, launcherPIDF.I, launcherPIDF.D, launcherPIDF.F);
+
     public turret(Servo turretDriverL, Servo turretDriverR, DcMotorEx launcherMotorFront, DcMotorEx launcherMotorRear) {
         this.turretDriverL = turretDriverL;
         this.turretDriverR = turretDriverR;
@@ -47,6 +54,7 @@ public class turret {
         launcherMotorRear.setPower(power);
     }
 
+
     public void launcherUpdate () {
         launcherSetVel(LauncherPIDF.getLastSetPoint());
     }
@@ -61,7 +69,7 @@ public class turret {
 
     public static double launcherDistToVelocity(double Distance) {
                 Distance = Math.max(20, Math.min(90, Distance));
-                return 0.35*((0.00016752*Math.pow(Distance,4))-(0.0408935*Math.pow(Distance,3))+(3.67967*Math.pow(Distance,2))-(126.85945*Distance)+3380.61105);
+                return 0.38*((0.00016752*Math.pow(Distance,4))-(0.0408935*Math.pow(Distance,3))+(3.67967*Math.pow(Distance,2))-(126.85945*Distance)+3380.61105);
         }
 
 

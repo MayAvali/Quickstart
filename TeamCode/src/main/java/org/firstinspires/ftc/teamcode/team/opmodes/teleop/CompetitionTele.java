@@ -46,7 +46,8 @@ public class CompetitionTele extends LinearOpMode {
 
         gate ServoGate = new gate(
                 hardwareMap.servo.get("gateL"),
-                hardwareMap.servo.get("gateR")
+                hardwareMap.servo.get("gateR"),
+                hardwareMap.servo.get("indicatorLight")
         );
 
         turret Turret = new turret(
@@ -189,7 +190,12 @@ public class CompetitionTele extends LinearOpMode {
             Drivetrain.botOrientedDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.right_trigger);
 
             if (!targetResetIdle) {
-                Intake.runIntake(gamepad1.left_trigger, gamepad1.right_trigger);
+                if (launchActive){
+                    Intake.runIntake(0.5*gamepad1.left_trigger, 0.5*gamepad1.right_trigger);
+                } else {
+                    Intake.runIntake(gamepad1.left_trigger, gamepad1.right_trigger);
+                }
+
             } else {
                 Intake.runIntake(0, 1);
             }

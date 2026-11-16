@@ -6,4 +6,15 @@ public class Resources {
 
     //Panels Web UI : http://192.168.43.1:8001/
 
+    /* TODO:
+        Integrate servo into teleop, turns on in launch mode
+
+        Rewrite auto to attempt to launch into same hive twice to ensure a tip (Get Jerry to do this)
+
+        Cry
+
+    */
+
+
+
 }

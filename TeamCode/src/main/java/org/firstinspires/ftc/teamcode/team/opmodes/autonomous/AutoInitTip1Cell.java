@@ -25,31 +25,25 @@ import static com.pedropathing.ivy.commands.Commands.*;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "1. Autonomous Tip, Fill, PARK", group = "Autonomous")
-public class AutoInitTipAndFill extends LinearOpMode {
+@Autonomous(name = "1. Autonomous Tip 1 Cell", group = "Autonomous")
+public class AutoInitTip1Cell extends LinearOpMode {
 
     private Follower follower;
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
     private final Pose start = poseFactory.of(56.2669, 7.0872, 90);
-    private final Pose shootPreload = poseFactory.of(58, 30, 90);
+    private final Pose shootPreload = poseFactory.of(58, 19, 90);
     private final Pose getGardenStart = poseFactory.of(58, 30, 90);
-    private final Pose getGarden = poseFactory.of(8.239, 7.8575, -90.001);
+    private final Pose getGarden = poseFactory.of(10.5, 9.5, -90.001);
     private final Pose getGardenControl1 = poseFactory.of(29.493, 29.1373, 0);
-    private final Pose shootGarden = poseFactory.of(56, 114.6724, -90);
-    private final Pose shootGardenControl1 = poseFactory.of(57.7995, 6.2164, 0);
-    private final Pose shootGardenControl2 = poseFactory.of(9.7505, 121.5546, 0);
-    private final Pose shootGardenSegment1Heading = poseFactory.of(56, 114.6724, -90);
-    private final Pose shootGardenSegment2Start = poseFactory.of(56, 114.6724, -90);
-    private final Pose shootGardenSegment2End = poseFactory.of(56, 114.6724, 90);
-    private final Pose shootGardenSegment4Start = poseFactory.of(56, 114.6724, 64.5213);
-    private final Pose shootGardenSegment4End = poseFactory.of(56, 114.6724, -90);
-    private final Pose preparePushStart = poseFactory.of(56, 114.6724, 270);
-    private final Pose preparePush = poseFactory.of(9.0343, 62.7412, 0);
-    private final Pose preparePushControl1 = poseFactory.of(22.6234, 129.352, 0);
-    private final Pose preparePushControl2 = poseFactory.of(39.2358, 52.847, 0);
-    private final Pose pushPartner = poseFactory.of(8.0645, 94.8402, 0);
+    private final Pose shootGarden = poseFactory.of(58, 19, 90);
+    private final Pose shootGardenSegment1Heading = poseFactory.of(58, 24, -90);
+    private final Pose shootGardenSegment2Start = poseFactory.of(58, 24, -90);
+    private final Pose shootGardenSegment2End = poseFactory.of(58, 24, 90);
+    private final Pose preparePushStart = poseFactory.of(58, 24, 90);
+    private final Pose preparePush = poseFactory.of(9, 62.7412, 0);
+    private final Pose pushPartner = poseFactory.of(9, 99, 0);
 
     private intake Intake;
     private gate ServoGate;
@@ -128,17 +122,23 @@ public class AutoInitTipAndFill extends LinearOpMode {
         return sequential(
                 setTurretAngle(0),
                 closeGate(),
-                setLauncherSpeed(671),
+                setLauncherSpeed(775),
+                setIntakeSpeed(0,0),
+                waitSeconds(1.5),
 
                 follow(follower, shootPreload()),
 
+                //setIntakeSpeed(0,0.5),
                 openGate(),
                 waitSeconds(2),
                 reverseIntake(),
                 waitSeconds(1),
                 closeGate(),
+                //setIntakeSpeed(0,0),
 
                 follow(follower, getGarden()),
+
+                waitSeconds(2),
 
                 follow(follower, shootGarden()),
 
@@ -171,16 +171,17 @@ public class AutoInitTipAndFill extends LinearOpMode {
                 (DcMotorEx) hardwareMap.dcMotor.get("intakeR")
         );
 
-        ServoGate = new gate(
-                hardwareMap.servo.get("gateL"),
-                hardwareMap.servo.get("gateR")
-        );
-
         Turret = new turret(
                 hardwareMap.servo.get("turretL"),
                 hardwareMap.servo.get("turretR"),
                 (DcMotorEx) hardwareMap.dcMotor.get("launcherFront"),
                 (DcMotorEx) hardwareMap.dcMotor.get("launcherRear")
+        );
+
+        ServoGate = new gate(
+                hardwareMap.servo.get("gateL"),
+                hardwareMap.servo.get("gateR"),
+                hardwareMap.servo.get("indicatorLight")
         );
 
         Scheduler.reset();
@@ -193,6 +194,7 @@ public class AutoInitTipAndFill extends LinearOpMode {
 
         while (opModeIsActive()) {
             follower.update();
+            blackboard.put("BotPose", follower.pose());
             Scheduler.execute();
 
             // Continuously execute subsystem PID loops
@@ -221,11 +223,14 @@ public class AutoInitTipAndFill extends LinearOpMode {
     }
 
     public Path shootGarden() {
-        return Paths.curve(getGarden, shootGardenControl1, shootGardenControl2, shootGarden).heading(Interpolator.piecewise().until(0.0585, Interpolator.constant(shootGardenSegment1Heading)).until(0.4843, Interpolator.linear(shootGardenSegment2Start, shootGardenSegment2End)).until(0.8354, Interpolator.tangent).until(1, Interpolator.linear(shootGardenSegment4Start, shootGardenSegment4End)));
+        return Paths.line(getGarden, shootGarden)
+                .heading(Interpolator.piecewise()
+                        .until(0.3, Interpolator.constant(shootGardenSegment1Heading))
+                        .until(1, Interpolator.linear(shootGardenSegment2Start, shootGardenSegment2End)));
     }
 
     public Path preparePush() {
-        return Paths.curve(preparePushStart, preparePushControl1, preparePushControl2, preparePush).linear(preparePushStart, preparePush);
+        return Paths.line(preparePushStart, preparePush).linear(preparePushStart, preparePush);
     }
 
     public Path pushPartner() {

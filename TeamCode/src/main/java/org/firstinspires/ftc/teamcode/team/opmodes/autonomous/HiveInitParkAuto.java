@@ -55,7 +55,8 @@ public class HiveInitParkAuto extends LinearOpMode {
 
         gate ServoGate = new gate(
                 hardwareMap.servo.get("gateL"),
-                hardwareMap.servo.get("gateR")
+                hardwareMap.servo.get("gateR"),
+                hardwareMap.servo.get("indicatorLight")
         );
 
         turret Turret = new turret(

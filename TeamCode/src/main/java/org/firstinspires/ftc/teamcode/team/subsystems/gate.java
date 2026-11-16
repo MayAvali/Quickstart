@@ -14,17 +14,20 @@ public class gate {
 
     private final Servo gateL;
     private final Servo gateR;
+    private final Servo indicatorLight;
     static boolean isGateOpen = false;
 
-    public gate(Servo gateL, Servo gateR) {
+    public gate(Servo gateL, Servo gateR, Servo indicatorLight) {
         this.gateL = gateL;
         this.gateR = gateR;
+        this.indicatorLight = indicatorLight;
     }
     public void openGate() {
         if (!isGateOpen){
             isGateOpen = true;
             gateL.setPosition(LOpenPosition);
             gateR.setPosition(ROpenPosition);
+            indicatorLight.setPosition(1);
         }
     }
     public void closeGate() {
@@ -32,11 +35,11 @@ public class gate {
             isGateOpen = false;
             gateL.setPosition(LClosePosition);
             gateR.setPosition(RClosePosition);
+            indicatorLight.setPosition(0);
         }
     }
     public void forceCloseGate() {
         gateL.setPosition(LClosePosition);
         gateR.setPosition(RClosePosition);
     }
-
 }

@@ -53,10 +53,12 @@ public class Constants {
                 c.forwardTranslational.set(Controller.piecewise(secondaryTranslationalForward).put(2.5, primaryTranslationalForward));
                 c.strafeTranslational.set(Controller.piecewise(secondaryTranslationalLateral).put(2.5, primaryTranslationalLateral));
 
+                c.translationalDeviationTolerance.set(1.0);
+
                 c.coast.set(Controller.proportionalFeedforward(0.012241519700593359));
                 c.brake.set(Controller.proportionalFeedforward(0.010405291745504355));
 
-                c.headingFeedback.set(Controller.proportional(5.106676971840961));
+                c.headingFeedback.set(Controller.proportional(4.106676971840961));
                 c.headingBrakeCoefficients.set(Vector2D.cartesian(0.06997637499255248, 0.00332763498688731));
 
                 c.linearBrakeCoefficients.set(Matrix.diag(0.1308848900550059, 0.003775590660182452));

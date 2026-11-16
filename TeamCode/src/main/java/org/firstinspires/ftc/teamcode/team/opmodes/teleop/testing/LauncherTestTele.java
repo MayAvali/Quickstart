@@ -44,7 +44,7 @@ public class LauncherTestTele extends LinearOpMode {
         while (opModeIsActive())
         {
             Turret.launcherSetVel(turret.fallbackVelocity);
-            Intake.setPower(0);
+            Intake.setTargetVelocity(2500);
 
             telemetry.addData("LauncherTarget", turret.fallbackVelocity);
 
